@@ -16,8 +16,6 @@ class MovieDataSet(DataSet):
 
     @staticmethod
     def create_valid_indices(pairs: list, label_extraction_function):
-        rotating_margin_factor = (math.sqrt(2.0) - 1.0) / 2.0
-
         valid_indices = {}
 
         description_prefix = "Checking validity: "
@@ -46,12 +44,11 @@ class MovieDataSet(DataSet):
                         continue
 
                     face_box = DataSet.make_box_from_landmark(annotation['landmark'])
-                    margin_need = face_box[2] * rotating_margin_factor
 
-                    x = int(round(face_box[0] - margin_need))
-                    y = int(round(face_box[1] - margin_need))
-                    width = int(round(face_box[2] + (2.0 * margin_need)))
-                    height = int(round(face_box[3] + (2.0 * margin_need)))
+                    x = int(round(face_box[0]))
+                    y = int(round(face_box[1]))
+                    width = int(round(face_box[2]))
+                    height = int(round(face_box[3]))
 
                     if x < 0 or y < 0:
                         continue
@@ -62,6 +59,7 @@ class MovieDataSet(DataSet):
                     valid_frame_indices.append(frame_index)
 
             if len(valid_frame_indices) == 0:
+                print('invalid: ' + json_file_path)
                 continue
 
             if label not in valid_indices.keys():
