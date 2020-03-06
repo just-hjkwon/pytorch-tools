@@ -59,7 +59,6 @@ class MovieDataSet(DataSet):
                     valid_frame_indices.append(frame_index)
 
             if len(valid_frame_indices) == 0:
-                print('invalid: ' + json_file_path)
                 continue
 
             if label not in valid_indices.keys():
