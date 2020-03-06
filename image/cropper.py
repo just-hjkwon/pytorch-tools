@@ -26,7 +26,7 @@ class Cropper:
         else:
             source_y = 0
             target_y = -y
-            copy_height = height + x
+            copy_height = height + y
 
         if source_x + copy_width >= image.shape[1]:
             copy_width = image.shape[1] - source_x
