@@ -26,6 +26,7 @@ class DataSet(ABC):
         self.labels = set(self.train_valid_indices.keys()) | set(self.validation_valid_indices.keys())
 
         self.is_train_mode = True
+        self.random_salt = 20200305
 
     def prepare_pairs(self):
         train_file_list = glob.glob(self.train_directory + "/**/*.%s" % self.target_extension, recursive=True)
@@ -57,6 +58,9 @@ class DataSet(ABC):
             return self.get_train_datum(label, index)
         else:
             return self.get_validation_datum(label, index)
+
+    def set_random_salt(self, random_salt):
+        self.random_salt = 20200305 + random_salt
 
     @staticmethod
     def create_pairs_with_json(file_list: list):

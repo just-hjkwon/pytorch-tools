@@ -9,11 +9,6 @@ import tqdm
 
 
 class MovieDataSet(DataSet):
-    random_salt = 20200305
-
-    def set_random_salt(self, random_salt):
-        self.random_salt = 20200305 + random_salt
-
     @staticmethod
     def create_valid_indices(pairs: list, label_extraction_function):
         valid_indices = {}
