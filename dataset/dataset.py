@@ -73,30 +73,6 @@ class DataSet(ABC):
 
         return pairs
 
-    @staticmethod
-    def make_box_from_landmark(landmark: list):
-        landmark = [[ls["x"], ls["y"]] for ls in landmark]
-        landmark_array = np.array(landmark)
-
-        min_xy = landmark_array.min(axis=0)
-        max_xy = landmark_array.max(axis=0)
-
-        face_box = [min_xy[0], min_xy[1], max_xy[0] - min_xy[0], max_xy[1] - min_xy[1]]
-
-        face_box[1] -= face_box[3] * 0.1
-        face_box[3] *= 1.15
-
-        if face_box[2] > face_box[3]:
-            padding = (face_box[2] - face_box[3]) / 2.0
-            face_box[1] -= padding
-            face_box[3] = face_box[2]
-        else:
-            padding = (face_box[3] - face_box[2]) / 2.0
-            face_box[0] -= padding
-            face_box[2] = face_box[3]
-
-        return face_box
-
     @abstractmethod
     def train_count(self, label):
         pass
