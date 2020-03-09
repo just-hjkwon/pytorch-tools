@@ -1,14 +1,21 @@
 from abc import ABC, abstractmethod
 import glob
 import os
+from typing import Union, List
 
 import numpy as np
 
 
 class DataSet(ABC):
-    def __init__(self, base_directory: str, target_extension: str):
+    def __init__(self, base_directory: str, target_extension: Union[str, List[str]]):
         self.base_directory = base_directory
-        self.target_extension = target_extension
+
+        if type(target_extension) == list:
+            self.target_extension = target_extension
+        elif type(target_extension) == str:
+            self.target_extension = [target_extension]
+        else:
+            raise ValueError("The target_extension should be the string of extension or list of it.")
 
         self.train_pairs = []
         self.validation_pairs = []
@@ -24,7 +31,9 @@ class DataSet(ABC):
         self.random_salt = 20200305
 
     def prepare_pairs(self):
-        file_list = glob.glob(self.base_directory + "/**/*.%s" % self.target_extension, recursive=True)
+        file_list = []
+        for extension in self.target_extension:
+            file_list += glob.glob(self.base_directory + "/**/*.%s" % extension, recursive=True)
 
         train_file_list = list(filter(self.train_datum_filter, file_list))
         validation_file_list = list(filter(self.validation_datum_filter, file_list))
