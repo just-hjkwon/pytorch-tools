@@ -129,10 +129,10 @@ class DataSet(ABC):
 
     @staticmethod
     @abstractmethod
-    def label_extraction_function(file_path: str):
+    def extract_label(file_path: str):
         pass
 
     @staticmethod
     @abstractmethod
-    def is_validate_annotation(image_width, image_height, annotation):
+    def is_valid_annotation(image_width, image_height, annotation):
         pass

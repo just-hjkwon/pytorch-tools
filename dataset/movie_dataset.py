@@ -18,7 +18,7 @@ class MovieDataSet(DataSet):
         for video_index, (video_file_path, json_file_path) in enumerate(tqdm_iterator):
             tqdm_iterator.set_description(description_prefix + video_file_path)
 
-            label = self.label_extraction_function(video_file_path)
+            label = self.extract_label(video_file_path)
 
             video = cv2.VideoCapture(video_file_path)
 
@@ -31,7 +31,7 @@ class MovieDataSet(DataSet):
                 annotations = json.load(file)
 
                 for frame_index, annotation in enumerate(annotations):
-                    if self.is_validate_annotation(video_width, video_height, annotation) is False:
+                    if self.is_valid_annotation(video_width, video_height, annotation) is False:
                         continue
 
                     valid_frame_indices.append(frame_index)

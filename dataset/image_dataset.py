@@ -18,14 +18,14 @@ class ImageDataSet(DataSet):
         for index, (image_file_path, json_file_path) in enumerate(tqdm_iterator):
             tqdm_iterator.set_description(description_prefix + image_file_path)
 
-            label = self.label_extraction_function(image_file_path)
+            label = self.extract_label(image_file_path)
 
             image_width, image_height = imagesize.get(image_file_path)
 
             with open(json_file_path) as file:
                 annotation = json.load(file)
 
-                if self.is_validate_annotation(image_width, image_height, annotation) is False:
+                if self.is_valid_annotation(image_width, image_height, annotation) is False:
                     continue
 
                 if label not in valid_indices.keys():
