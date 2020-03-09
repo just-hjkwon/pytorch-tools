@@ -2,6 +2,7 @@ from .dataset import DataSet
 
 import math
 import random
+from typing import Union
 
 import cv2
 import json
@@ -51,6 +52,22 @@ class MovieDataSet(DataSet):
 
     def validation_count(self, label):
         return len(self.validation_valid_indices[label].keys())
+
+    def get_train_filename(self, label: Union[int, str], index: int):
+        video_indices = sorted(list(self.train_valid_indices[label].keys()))
+        video_index = video_indices[index]
+
+        movie_file_path, json_file_path = self.train_pairs[video_index]
+
+        return movie_file_path, json_file_path
+
+    def get_validation_filename(self, label: Union[int, str], index: int):
+        video_indices = sorted(list(self.validation_valid_indices[label].keys()))
+        video_index = video_indices[index]
+
+        movie_file_path, json_file_path = self.validation_pairs[video_index]
+
+        return movie_file_path, json_file_path
 
     def get_train_datum(self, label, index):
         video_indices = sorted(list(self.train_valid_indices[label].keys()))
