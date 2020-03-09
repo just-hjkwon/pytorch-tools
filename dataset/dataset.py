@@ -6,19 +6,17 @@ import numpy as np
 
 
 class DataSet(ABC):
-    def __init__(self, base_directory: str, target_extension: str, label_extraction_function):
+    def __init__(self, base_directory: str, target_extension: str):
         self.base_directory = base_directory
         self.target_extension = target_extension
-
-        self.label_extraction_function = label_extraction_function
 
         self.train_pairs = []
         self.validation_pairs = []
 
         self.prepare_pairs()
 
-        self.train_valid_indices = self.create_valid_indices(self.train_pairs, label_extraction_function)
-        self.validation_valid_indices = self.create_valid_indices(self.validation_pairs, label_extraction_function)
+        self.train_valid_indices = self.create_valid_indices(self.train_pairs, self.label_extraction_function)
+        self.validation_valid_indices = self.create_valid_indices(self.validation_pairs, self.label_extraction_function)
 
         self.labels = set(self.train_valid_indices.keys()) | set(self.validation_valid_indices.keys())
 
@@ -128,4 +126,9 @@ class DataSet(ABC):
     @staticmethod
     @abstractmethod
     def validation_datum_filter(file_path: str):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def label_extraction_function(file_path: str):
         pass
