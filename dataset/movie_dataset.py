@@ -9,8 +9,7 @@ import tqdm
 
 
 class MovieDataSet(DataSet):
-    @staticmethod
-    def create_valid_indices(pairs: list, label_extraction_function, is_valid_annotation_function):
+    def create_valid_indices(self, pairs: list):
         valid_indices = {}
 
         description_prefix = "Checking validity: "
@@ -19,7 +18,7 @@ class MovieDataSet(DataSet):
         for video_index, (video_file_path, json_file_path) in enumerate(tqdm_iterator):
             tqdm_iterator.set_description(description_prefix + video_file_path)
 
-            label = label_extraction_function(video_file_path)
+            label = self.label_extraction_function(video_file_path)
 
             video = cv2.VideoCapture(video_file_path)
 
@@ -32,7 +31,7 @@ class MovieDataSet(DataSet):
                 annotations = json.load(file)
 
                 for frame_index, annotation in enumerate(annotations):
-                    if is_valid_annotation_function(video_width, video_height, annotation) is False:
+                    if self.is_validate_annotation(video_width, video_height, annotation) is False:
                         continue
 
                     valid_frame_indices.append(frame_index)

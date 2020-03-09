@@ -15,8 +15,8 @@ class DataSet(ABC):
 
         self.prepare_pairs()
 
-        self.train_valid_indices = self.create_valid_indices(self.train_pairs, self.label_extraction_function, self.is_validate_annotation)
-        self.validation_valid_indices = self.create_valid_indices(self.validation_pairs, self.label_extraction_function, self.is_validate_annotation)
+        self.train_valid_indices = self.create_valid_indices(self.train_pairs)
+        self.validation_valid_indices = self.create_valid_indices(self.validation_pairs)
 
         self.labels = set(self.train_valid_indices.keys()) | set(self.validation_valid_indices.keys())
 
@@ -113,9 +113,8 @@ class DataSet(ABC):
     def get_validation_datum(self, label, index):
         pass
 
-    @staticmethod
     @abstractmethod
-    def create_valid_indices(file_list: list, label_extraction_function):
+    def create_valid_indices(self, file_list: list):
         pass
 
     @staticmethod

@@ -9,8 +9,7 @@ import tqdm
 
 
 class ImageDataSet(DataSet):
-    @staticmethod
-    def create_valid_indices(pairs: list, label_extraction_function, is_valid_annotation_function):
+    def create_valid_indices(self, pairs: list):
         valid_indices = {}
 
         description_prefix = "Checking validity: "
@@ -19,14 +18,14 @@ class ImageDataSet(DataSet):
         for index, (image_file_path, json_file_path) in enumerate(tqdm_iterator):
             tqdm_iterator.set_description(description_prefix + image_file_path)
 
-            label = label_extraction_function(image_file_path)
+            label = self.label_extraction_function(image_file_path)
 
             image_width, image_height = imagesize.get(image_file_path)
 
             with open(json_file_path) as file:
                 annotation = json.load(file)
 
-                if is_valid_annotation_function(image_width, image_height, annotation) is False:
+                if self.is_validate_annotation(image_width, image_height, annotation) is False:
                     continue
 
                 if label not in valid_indices.keys():
