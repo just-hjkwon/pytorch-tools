@@ -59,6 +59,12 @@ class DataSet(ABC):
     def get_labels(self):
         return self.labels
 
+    def get_filename(self, label, index):
+        if self.is_train_mode is True:
+            return self.get_train_filename(label, index)
+        else:
+            return self.get_validation_filename(label, index)
+
     def get_datum(self, label, index):
         if self.is_train_mode is True:
             return self.get_train_datum(label, index)
@@ -81,6 +87,14 @@ class DataSet(ABC):
                 continue
 
         return pairs
+
+    @abstractmethod
+    def get_train_filename(self, label: Union[int, str], index: int):
+        pass
+
+    @abstractmethod
+    def get_validation_filename(self, label: Union[int, str], index: int):
+        pass
 
     @abstractmethod
     def train_count(self, label):

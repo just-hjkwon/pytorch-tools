@@ -1,6 +1,7 @@
 from .dataset import DataSet
 
 import math
+from typing import Union
 
 import cv2
 import imagesize
@@ -40,6 +41,18 @@ class ImageDataSet(DataSet):
 
     def validation_count(self, label):
         return len(self.validation_valid_indices[label])
+
+    def get_train_filename(self, label: Union[int, str], index: int):
+        pair_index = self.train_valid_indices[label][index]
+        image_file_path, json_file_path = self.train_pairs[pair_index]
+
+        return image_file_path, json_file_path
+
+    def get_validation_filename(self, label: Union[int, str], index: int):
+        pair_index = self.validation_valid_indices[label][index]
+        image_file_path, json_file_path = self.validation_pairs[pair_index]
+
+        return image_file_path, json_file_path
 
     def get_train_datum(self, label, index):
         pair_index = self.train_valid_indices[label][index]
