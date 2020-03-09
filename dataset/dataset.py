@@ -15,8 +15,8 @@ class DataSet(ABC):
 
         self.prepare_pairs()
 
-        self.train_valid_indices = self.create_valid_indices(self.train_pairs, self.label_extraction_function)
-        self.validation_valid_indices = self.create_valid_indices(self.validation_pairs, self.label_extraction_function)
+        self.train_valid_indices = self.create_valid_indices(self.train_pairs, self.label_extraction_function, self.is_validate_annotation)
+        self.validation_valid_indices = self.create_valid_indices(self.validation_pairs, self.label_extraction_function, self.is_validate_annotation)
 
         self.labels = set(self.train_valid_indices.keys()) | set(self.validation_valid_indices.keys())
 
@@ -131,4 +131,9 @@ class DataSet(ABC):
     @staticmethod
     @abstractmethod
     def label_extraction_function(file_path: str):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def is_validate_annotation(image_width, image_height, annotation):
         pass

@@ -10,7 +10,7 @@ import tqdm
 
 class ImageDataSet(DataSet):
     @staticmethod
-    def create_valid_indices(pairs: list, label_extraction_function):
+    def create_valid_indices(pairs: list, label_extraction_function, is_valid_annotation_function):
         valid_indices = {}
 
         description_prefix = "Checking validity: "
@@ -26,23 +26,7 @@ class ImageDataSet(DataSet):
             with open(json_file_path) as file:
                 annotation = json.load(file)
 
-                if "landmark" not in annotation.keys():
-                    continue
-
-                if len(annotation['landmark']) != 106:
-                    continue
-
-                face_box = DataSet.make_box_from_landmark(annotation['landmark'])
-
-                x = int(round(face_box[0]))
-                y = int(round(face_box[1]))
-                width = int(round(face_box[2]))
-                height = int(round(face_box[3]))
-
-                if x < 0 or y < 0:
-                    continue
-
-                if x + width >= image_width or y + height >= image_height:
+                if is_valid_annotation_function(image_width, image_height, annotation) is False:
                     continue
 
                 if label not in valid_indices.keys():

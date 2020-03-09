@@ -10,7 +10,7 @@ import tqdm
 
 class MovieDataSet(DataSet):
     @staticmethod
-    def create_valid_indices(pairs: list, label_extraction_function):
+    def create_valid_indices(pairs: list, label_extraction_function, is_valid_annotation_function):
         valid_indices = {}
 
         description_prefix = "Checking validity: "
@@ -32,23 +32,7 @@ class MovieDataSet(DataSet):
                 annotations = json.load(file)
 
                 for frame_index, annotation in enumerate(annotations):
-                    if "landmark" not in annotation.keys():
-                        continue
-
-                    if len(annotation['landmark']) != 106:
-                        continue
-
-                    face_box = DataSet.make_box_from_landmark(annotation['landmark'])
-
-                    x = int(round(face_box[0]))
-                    y = int(round(face_box[1]))
-                    width = int(round(face_box[2]))
-                    height = int(round(face_box[3]))
-
-                    if x < 0 or y < 0:
-                        continue
-
-                    if x + width >= video_width or y + height >= video_height:
+                    if is_valid_annotation_function(video_width, video_height, annotation) is False:
                         continue
 
                     valid_frame_indices.append(frame_index)
