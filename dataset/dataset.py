@@ -6,22 +6,17 @@ import numpy as np
 
 
 class DataSet(ABC):
-    def __init__(self, base_directory: str, train_subdirectory: str, validation_subdirectory: str,
-                 target_extension: str, label_extraction_function):
-        self.train_directory = os.path.join(base_directory, train_subdirectory)
-        self.validation_directory = os.path.join(base_directory, validation_subdirectory)
-
+    def __init__(self, base_directory: str, target_extension: str):
+        self.base_directory = base_directory
         self.target_extension = target_extension
-
-        self.label_extraction_function = label_extraction_function
 
         self.train_pairs = []
         self.validation_pairs = []
 
         self.prepare_pairs()
 
-        self.train_valid_indices = self.create_valid_indices(self.train_pairs, label_extraction_function)
-        self.validation_valid_indices = self.create_valid_indices(self.validation_pairs, label_extraction_function)
+        self.train_valid_indices = self.create_valid_indices(self.train_pairs, self.label_extraction_function)
+        self.validation_valid_indices = self.create_valid_indices(self.validation_pairs, self.label_extraction_function)
 
         self.labels = set(self.train_valid_indices.keys()) | set(self.validation_valid_indices.keys())
 
@@ -29,8 +24,10 @@ class DataSet(ABC):
         self.random_salt = 20200305
 
     def prepare_pairs(self):
-        train_file_list = glob.glob(self.train_directory + "/**/*.%s" % self.target_extension, recursive=True)
-        validation_file_list = glob.glob(self.validation_directory + "/**/*.%s" % self.target_extension, recursive=True)
+        file_list = glob.glob(self.base_directory + "/**/*.%s" % self.target_extension, recursive=True)
+
+        train_file_list = list(filter(self.train_datum_filter, file_list))
+        validation_file_list = list(filter(self.validation_datum_filter, file_list))
 
         train_file_list.sort()
         validation_file_list.sort()
@@ -119,4 +116,19 @@ class DataSet(ABC):
     @staticmethod
     @abstractmethod
     def create_valid_indices(file_list: list, label_extraction_function):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def train_datum_filter(file_path: str):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def validation_datum_filter(file_path: str):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def label_extraction_function(file_path: str):
         pass
