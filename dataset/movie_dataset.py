@@ -46,10 +46,16 @@ class MovieDataSet(DataSet):
         return valid_indices
 
     def train_count(self, label):
-        return len(self.train_valid_indices[label].keys())
+        if label in self.train_valid_indices.keys():
+            return len(self.train_valid_indices[label].keys())
+        else:
+            return 0
 
     def validation_count(self, label):
-        return len(self.validation_valid_indices[label].keys())
+        if label in self.validation_valid_indices.keys():
+            return len(self.validation_valid_indices[label].keys())
+        else:
+            return 0
 
     def get_train_filename(self, label: Union[int, str], index: int):
         video_indices = sorted(list(self.train_valid_indices[label].keys()))
