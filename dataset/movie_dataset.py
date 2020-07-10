@@ -5,7 +5,6 @@ import random
 from typing import Union
 
 import cv2
-import json
 import tqdm
 
 
@@ -16,7 +15,7 @@ class MovieDataSet(DataSet):
         description_prefix = "Checking validity: "
 
         tqdm_iterator = tqdm.tqdm(pairs, desc=description_prefix)
-        for video_index, (video_file_path, json_file_path) in enumerate(tqdm_iterator):
+        for video_index, (video_file_path, annotation_file_path) in enumerate(tqdm_iterator):
             tqdm_iterator.set_description(description_prefix + video_file_path)
 
             label = self.extract_label(video_file_path)
@@ -28,14 +27,13 @@ class MovieDataSet(DataSet):
 
             valid_frame_indices = []
 
-            with open(json_file_path) as file:
-                annotations = json.load(file)
+            annotations = self.parse_annotation(annotation_file_path)
 
-                for frame_index, annotation in enumerate(annotations):
-                    if self.is_valid_annotation(video_width, video_height, annotation) is False:
-                        continue
+            for frame_index, annotation in enumerate(annotations):
+                if self.is_valid_annotation(video_width, video_height, annotation) is False:
+                    continue
 
-                    valid_frame_indices.append(frame_index)
+                valid_frame_indices.append(frame_index)
 
             if len(valid_frame_indices) == 0:
                 continue
@@ -57,17 +55,17 @@ class MovieDataSet(DataSet):
         video_indices = sorted(list(self.train_valid_indices[label].keys()))
         video_index = video_indices[index]
 
-        movie_file_path, json_file_path = self.train_pairs[video_index]
+        movie_file_path, annotation_file_path = self.train_pairs[video_index]
 
-        return movie_file_path, json_file_path
+        return movie_file_path, annotation_file_path
 
     def get_validation_filename(self, label: Union[int, str], index: int):
         video_indices = sorted(list(self.validation_valid_indices[label].keys()))
         video_index = video_indices[index]
 
-        movie_file_path, json_file_path = self.validation_pairs[video_index]
+        movie_file_path, annotation_file_path = self.validation_pairs[video_index]
 
-        return movie_file_path, json_file_path
+        return movie_file_path, annotation_file_path
 
     def get_train_datum(self, label, index):
         video_indices = sorted(list(self.train_valid_indices[label].keys()))
@@ -76,11 +74,10 @@ class MovieDataSet(DataSet):
         random.seed(None)
         frame_index = random.choice(self.train_valid_indices[label][video_index])
 
-        movie_file_path, json_file_path = self.train_pairs[video_index]
+        movie_file_path, annotation_file_path = self.train_pairs[video_index]
 
-        with open(json_file_path) as json_file:
-            annotations = json.load(json_file)
-            annotation = annotations[frame_index]
+        annotations = self.parse_annotation(annotation_file_path)
+        annotation = annotations[frame_index]
 
         video = cv2.VideoCapture(movie_file_path)
         video.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
@@ -96,11 +93,10 @@ class MovieDataSet(DataSet):
         random.seed(self.random_salt + index)
         frame_index = random.choice(self.validation_valid_indices[label][video_index])
 
-        movie_file_path, json_file_path = self.validation_pairs[video_index]
+        movie_file_path, annotation_file_path = self.validation_pairs[video_index]
 
-        with open(json_file_path) as json_file:
-            annotations = json.load(json_file)
-            annotation = annotations[frame_index]
+        annotations = self.parse_annotation(annotation_file_path)
+        annotation = annotations[frame_index]
 
         video = cv2.VideoCapture(movie_file_path)
         video.set(cv2.CAP_PROP_POS_FRAMES, frame_index)

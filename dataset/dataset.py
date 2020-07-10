@@ -7,7 +7,7 @@ import numpy as np
 
 
 class DataSet(ABC):
-    def __init__(self, base_directory: str, target_extension: Union[str, List[str]]):
+    def __init__(self, base_directory: str, target_extension: Union[str, List[str]], anntoation_extension: Union[None, str]=None):
         self.base_directory = base_directory
 
         if type(target_extension) == list:
@@ -16,6 +16,11 @@ class DataSet(ABC):
             self.target_extension = [target_extension]
         else:
             raise ValueError("The target_extension should be the string of extension or list of it.")
+
+        if anntoation_extension is not None:
+            self.anntoation_extension = anntoation_extension
+        else:
+            self.anntoation_extension = "json"
 
         self.train_pairs = []
         self.validation_pairs = []
@@ -41,8 +46,8 @@ class DataSet(ABC):
         train_file_list.sort()
         validation_file_list.sort()
 
-        self.train_pairs = DataSet.create_pairs_with_json(train_file_list)
-        self.validation_pairs = DataSet.create_pairs_with_json(validation_file_list)
+        self.train_pairs = DataSet.create_pairs_with_annotation(train_file_list, self.anntoation_extension)
+        self.validation_pairs = DataSet.create_pairs_with_annotation(validation_file_list, self.anntoation_extension)
 
     def set_train_mode(self):
         self.is_train_mode = True
@@ -75,14 +80,14 @@ class DataSet(ABC):
         self.random_salt = 20200305 + random_salt
 
     @staticmethod
-    def create_pairs_with_json(file_list: list):
+    def create_pairs_with_annotation(file_list: list, annotatino_extension: str):
         pairs = []
 
         for file_path in file_list:
-            json_file_path = os.path.splitext(file_path)[0] + ".json"
+            annotation_file_path = os.path.splitext(file_path)[0] + ".%s" % annotatino_extension
 
-            if os.path.exists(json_file_path) is True:
-                pairs.append((file_path, json_file_path))
+            if os.path.exists(annotation_file_path) is True:
+                pairs.append((file_path, annotation_file_path))
             else:
                 continue
 
@@ -129,6 +134,11 @@ class DataSet(ABC):
     @staticmethod
     @abstractmethod
     def extract_label(file_path: str):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def parse_annotation(file_path: str):
         pass
 
     @staticmethod
